@@ -201,8 +201,8 @@ public:
  private:
   fileFormat_t smearingType_;
   
-  correction_map_t scales, scales_not_defined;
-  correction_map_t smearings, smearings_not_defined;
+  correction_map_t scales;
+  correction_map_t smearings;
   
   void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
 		   double rho, double err_rho, double phi, double err_phi, double Emean, double err_Emean);
