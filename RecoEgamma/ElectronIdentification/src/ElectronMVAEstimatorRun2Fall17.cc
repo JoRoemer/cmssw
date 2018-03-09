@@ -244,6 +244,11 @@ int ElectronMVAEstimatorRun2Fall17::findCategory( const reco::GsfElectron * eleR
     iCategory = CAT_EE_PTHig;
   }
 
+  else {
+    throw cms::Exception("MVA failure: ")
+      << " given particle does not fit any category. It has probably strange pt or eta values. pt = " << pt << ", eta = " << eta << std::endl;
+  }
+
   return iCategory;
 }
 
