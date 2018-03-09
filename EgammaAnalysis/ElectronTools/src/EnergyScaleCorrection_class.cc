@@ -89,15 +89,7 @@ correctionValue_class EnergyScaleCorrection_class::getScaleCorrection(unsigned i
   correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, gainSeed);
   correction_map_t::const_iterator corr_itr = scales.find(category); // find the correction value in the map that associates the category to the correction
   
-  if(corr_itr == scales.end()) { // if not in the standard classes, add it in the list of not defined classes
-    
-    // this part is commented because it makes the method not constant
-    // if(scales_not_defined.count(category) == 0) {
-    // 	correctionValue_class corr;
-    // 	scales_not_defined[category] = corr;
-    // }
-    // corr_itr = scales_not_defined.find(category);
-
+  if(corr_itr == scales.end()) {
     LOGWARN("EnergyScaleCorrection_class") << "[ERROR] Scale category not found: " << category << " Returning uncorrected value.";
     correctionValue_class nocorr;
     LOGWARN("EnergyScaleCorrection_class") << nocorr;
@@ -303,15 +295,10 @@ float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, bool isEBEle,
   correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, 0);
   correction_map_t::const_iterator corr_itr = smearings.find(category);
   if(corr_itr == smearings.end()) { 
-    // if not in the standard classes, add it in the list of not defined classes
-    // the following commented part makes the method non const
-    // if(smearings_not_defined.count(category) == 0) {
-    // 	correctionValue_class corr;
-    // 	smearings_not_defined[category] = corr;
-    // }
-    corr_itr = smearings_not_defined.find(category);
     LOGWARN("EnergyScaleCorrection_class") << "[WARNING] Smearing category not found: ";
     LOGWARN("EnergyScaleCorrection_class") << category;
+    LOGWARN("EnergyScaleCorrection_class") << "Returning uncorrected value";
+    return 0.;
   }
   
   LOGDRESSED("EnergyScaleCorrection_class") << "[DEBUG] Checking smearing correction for category: " << category;
@@ -332,14 +319,11 @@ float EnergyScaleCorrection_class::getSmearingRho(int runNumber, bool isEBEle, f
   
   correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, 0);
   correction_map_t::const_iterator corr_itr = smearings.find(category);
-  if(corr_itr == smearings.end()) { 
-
-    // if not in the standard classes, add it in the list of not defined classes
-    // if(smearings_not_defined.count(category) == 0) {
-    // 	correctionValue_class corr;
-    // 	smearings_not_defined[category] = corr;
-    // }
-    corr_itr = smearings_not_defined.find(category);
+  if(corr_itr == smearings.end()) {
+   LOGWARN("EnergyScaleCorrection_class") << "[WARNING] Smearing category not found: ";
+   LOGWARN("EnergyScaleCorrection_class") << category;
+   LOGWARN("EnergyScaleCorrection_class") << "Returning rho = 1";
+   return 1.;
   }
   
   return corr_itr->second.rho;
