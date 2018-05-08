@@ -123,6 +123,7 @@ class CrabHelper(object):
             raise ValueError( 'Sample contains "/" which is not allowed' )
         self.crab_config.set( 'General', 'requestName', self.crab_taskname )
         self.crab_config.set( 'General', 'workArea', self.local_path)
+        self.crab_config.set( 'General', 'instance', 'preprod' )
         if self.options.no_log:
             self.crab_config.set( 'General', 'transferLogs', 'False' )
         else:
