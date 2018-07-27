@@ -44,7 +44,10 @@ using namespace edm;
 using namespace dttmaxenums;
 
 
-DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset): select_(pset) {
+DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset) {
+
+  edm::ConsumesCollector collector(consumesCollector());
+  select_ = new DTSegmentSelector(pset,collector);
 
   // The name of the 4D rec hits collection
   theRecHits4DToken = (consumes<DTRecSegment4DCollection>(pset.getParameter<InputTag>("recHits4DLabel")));
@@ -106,6 +109,7 @@ DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset): select_(pset
 DTVDriftCalibration::~DTVDriftCalibration(){
   theFile->Close();
   delete theFitter;
+  delete select_;
   LogVerbatim("Calibration") << "[DTVDriftCalibration]Destructor called!";
 }
 
@@ -170,7 +174,7 @@ void DTVDriftCalibration::analyze(const Event & event, const EventSetup& eventSe
       LogTrace("Calibration") << "Segment local pos (in chamber RF): " << (*segment).localPosition()
                               << "\nSegment global pos: " << chamber->toGlobal((*segment).localPosition());
 
-      if( !select_(*segment, event, eventSetup) ) continue;
+      if( !((*select_)(*segment, event, eventSetup)) ) continue;
 
       LocalPoint phiSeg2DPosInCham;  
       LocalVector phiSeg2DDirInCham;
