@@ -19,7 +19,6 @@
 #include "CalibMuon/DTDigiSync/interface/DTTTrigSyncFactory.h"
 #include "CalibMuon/DTDigiSync/interface/DTTTrigBaseSync.h"
 
-#include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"
 #include "CondFormats/DTObjects/interface/DTMtime.h"
 
 #include "CondFormats/DataRecord/interface/DTStatusFlagRcd.h"
@@ -45,10 +44,13 @@ using namespace edm;
 using namespace dttmaxenums;
 
 
-DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset): select_(pset) {
+DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset) {
+
+  edm::ConsumesCollector collector(consumesCollector());
+  select_ = new DTSegmentSelector(pset,collector);
 
   // The name of the 4D rec hits collection
-  theRecHits4DLabel = pset.getParameter<InputTag>("recHits4DLabel");
+  theRecHits4DToken = (consumes<DTRecSegment4DCollection>(pset.getParameter<InputTag>("recHits4DLabel")));
 
   // The root file which will contain the histos
   string rootFileName = pset.getUntrackedParameter<string>("rootFileName");
@@ -107,6 +109,7 @@ DTVDriftCalibration::DTVDriftCalibration(const ParameterSet& pset): select_(pset
 DTVDriftCalibration::~DTVDriftCalibration(){
   theFile->Close();
   delete theFitter;
+  delete select_;
   LogVerbatim("Calibration") << "[DTVDriftCalibration]Destructor called!";
 }
 
@@ -131,7 +134,7 @@ void DTVDriftCalibration::analyze(const Event & event, const EventSetup& eventSe
 
   // Get the rechit collection from the event
   Handle<DTRecSegment4DCollection> all4DSegments;
-  event.getByLabel(theRecHits4DLabel, all4DSegments); 
+  event.getByToken(theRecHits4DToken, all4DSegments);
 
   // Get the map of noisy channels
   /*ESHandle<DTStatusFlag> statusMap;
@@ -171,7 +174,7 @@ void DTVDriftCalibration::analyze(const Event & event, const EventSetup& eventSe
       LogTrace("Calibration") << "Segment local pos (in chamber RF): " << (*segment).localPosition()
                               << "\nSegment global pos: " << chamber->toGlobal((*segment).localPosition());
 
-      if( !select_(*segment, event, eventSetup) ) continue;
+      if( !((*select_)(*segment, event, eventSetup)) ) continue;
 
       LocalPoint phiSeg2DPosInCham;  
       LocalVector phiSeg2DDirInCham;

@@ -29,10 +29,14 @@ class CrabHelper(object):
         #submit crab job
         log.info("Submitting crab job")
         self.crab.submit(full_crab_config_filename)
-        log.info("crab job submitted. Waiting 30 seconds before first status call")
-        time.sleep( 30 )
+        log.info("crab job submitted. Waiting 120 seconds before first status call")
+        time.sleep( 120 )
+
         task = self.crabFunctions.CrabTask(crab_config = full_crab_config_filename)
         task.update()
+        if task.state =="UNKNOWN":
+            time.sleep( 30 )
+            task.update()
         success_states = ( 'QUEUED', 'SUBMITTED', "COMPLETED", "FINISHED")
         if task.state in success_states:
             log.info("Job in state %s" % task.state )
@@ -122,6 +126,7 @@ class CrabHelper(object):
             raise ValueError( 'Sample contains "/" which is not allowed' )
         self.crab_config.set( 'General', 'requestName', self.crab_taskname )
         self.crab_config.set( 'General', 'workArea', self.local_path)
+        self.crab_config.set( 'General', 'instance', 'preprod' )
         if self.options.no_log:
             self.crab_config.set( 'General', 'transferLogs', 'False' )
         else:
