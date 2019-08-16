@@ -130,6 +130,13 @@ class DTWorkflow(CLIHelper, CrabHelper):
         getattr(self.process, self.digilabel).inputLabel = 'rawDataCollector'
         tools.prependPaths(self.process,self.digilabel)
 
+    def add_phase2_unpacker(self):
+        print(self.options.workflow)
+        if self.options.workflow == "T0Wire":
+            self.process.dtunpacker = self.process.dtunpackerPhase2.clone()
+        else:
+            self.process.muonDTDigis = self.process.muonDTDigisPhase2.clone()
+
     def add_local_t0_db(self, local=False):
         """ Add a local t0 database as input. Use the option local is used
             if the pset is processed locally and not with crab.
@@ -208,6 +215,8 @@ class DTWorkflow(CLIHelper, CrabHelper):
             self.add_raw_option()
         if self.options.preselection:
             self.add_preselection()
+        if self.options.phase2:
+            self.add_phase2_unpacker()
 
     def prepare_common_write(self, do_hadd=True):
         """ Common operations used in most prepare_[workflow_mode]_erite functions"""
