@@ -124,7 +124,8 @@ void DTT0Calibration::analyze(const edm::Event & event, const edm::EventSetup& e
             digi != digiRange.second;
             ++digi)
       {
-         const double t0 = digi->countsTDC();
+         //const double t0 = digi->countsTDC();
+         const double t0 = digi->time();
          if (nevents == 1)
          {
             t0_guess = t0;
@@ -461,6 +462,7 @@ void DTT0Calibration::endJob() {
       const auto& means = chamber_mean.second;
       const auto& sigmas = sigmas_per_chamber[chamber_id];
       mean_per_chamber.emplace(chamber_id, unweighted_mean_function(means, sigmas));
+      std::cout << "CHAMBER MEAN " << chamber_id << " " << unweighted_mean_function(means, sigmas).first << std::endl;
    }
 
    // calculate relative values
@@ -481,7 +483,8 @@ void DTT0Calibration::endJob() {
       t0sWRTChamber->set(wire_id,
             t0,
             sqrt(theSigmaT0PerWire[wire_id]),
-            DTTimeUnits::counts
+            //DTTimeUnits::counts //FIXME
+            DTTimeUnits::ns
             );
    }
 

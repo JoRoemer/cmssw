@@ -31,14 +31,14 @@
 //----------------
 DTT0::DTT0():
   dataVersion( " " ),
-  nsPerCount( 25.0 / 32.0 ),
+  nsPerCount( 25.0 / 30.0 ),
   dataList( DTSequentialCellNumber::max() + 10 ) {
 }
 
 
 DTT0::DTT0( const std::string& version ):
   dataVersion( version ),
-  nsPerCount( 25.0 / 32.0 ),
+  nsPerCount( 25.0 / 30.0 ),
   dataList( DTSequentialCellNumber::max() + 10 ) {
 }
 
