@@ -23,6 +23,8 @@ class CLIHelper(object):
             default=os.getcwd(), help="connect string default:%(default)s")
         common_opts_group.add_argument("--no-exec",
             action="store_true", help="Do not execute or submit any workflow")
+        common_opts_group.add_argument("--input-files-local",
+            action="store_true", help="Look for input files locally")
         return common_opts_parser
 
     @classmethod
